@@ -38,6 +38,6 @@ Syffer est un outil simple en ligne de commande qui permet de capturer des paque
 Ce projet a été créé par ROOT3301.
 
 ## Licence
-Ce projet est sous licence [MIT.
+Ce projet est sous licence MIT.
 
 
