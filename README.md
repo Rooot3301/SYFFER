@@ -1,24 +1,19 @@
 # Syffer - Outil de Capture de Paquets et de Scan Réseau
 
 
+  /$$$$$$  /$$     /$$ /$$$$$$$$ /$$$$$$$$ /$$$$$$$$ /$$$$$$$ 
+ /$$__  $$|  $$   /$$/| $$_____/| $$_____/| $$_____/| $$__  $$
+| $$  \__/ \  $$ /$$/ | $$      | $$      | $$      | $$  \ $$
+|  $$$$$$   \  $$$$/  | $$$$$   | $$$$$   | $$$$$   | $$$$$$$/
+ \____  $$   \  $$/   | $$__/   | $$__/   | $$__/   | $$__  $$
+ /$$  \ $$    | $$    | $$      | $$      | $$      | $$  \ $$
+|  $$$$$$/    | $$    | $$      | $$      | $$$$$$$$| $$  | $$
+ \______/     |__/    |__/      |__/      |________/|__/  |__/
+                                                              
+                                                              
+                                                              
 
-
-
-
-
-  _, ,  ,__, __, _,,_       __  ,  ,    ,_   _,  _,  ___,3301
- (_, \_/'|_,'|_,/_,|_)     '|_) \_/     |_) / \,/ \,' |      
-  _), /` |   | '\_'| \     _|_), /`    '| \'\_/'\_/   |      
- ' (_/   '   '    `'  `   '   (_/       '  `'   '     '      
-                                                             
-
-
-
-
-                                                                                                       
-                                                                                                       
-
-
+                                                          
 
 ## Description
 Syffer est un outil simple en ligne de commande qui permet de capturer des paquets réseau et de scanner les appareils connectés au réseau local. Il offre également des fonctionnalités pour obtenir des informations sur le réseau de votre machine, l'adresse IP locale, la localisation d'une adresse IP publique et afficher les détails des paquets capturés.
