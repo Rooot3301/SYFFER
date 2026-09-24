@@ -19,6 +19,8 @@ _____/ | |/ / __/ __/ __/ __/ _, _/
   de paquets et le scan ARP.
 - **Linux / macOS** : la capture et le scan ARP nécessitent
   `CAP_NET_RAW` ou d'être lancés en root.
+- **Optionnel** : [nmap](https://nmap.org/download.html) ≥ 7.90 pour
+  l'option "Scan avancé (nmap)".
 
 ## Installation
 
@@ -47,23 +49,30 @@ Entrée pour valider. Menu :
    écrit un `.pcap` horodaté dans `extract/`.
 2. **Scan du réseau (ARP)** — scan ARP d'un CIDR, affiche IP / MAC /
    vendor.
-3. **Informations réseau de la machine** — hostname, IP locale,
+3. **Scan avancé (nmap)** — port scan + fingerprinting via wrapper
+   nmap : 5 profils prédéfinis (Quick, Full TCP, Service+Version, OS
+   Detection, Aggressive) + mode Custom (ports + toggles). Banner
+   grabbing TCP passif optionnel en complément. Le XML brut de nmap
+   est sauvegardé sous `extract/nmap-*.xml`. **Requiert nmap
+   installé** ([nmap.org/download](https://nmap.org/download.html)) ;
+   l'option refuse proprement si le binaire est absent. OS detection
+   et scan ARP demandent des droits root/admin.
+4. **Informations réseau de la machine** — hostname, IP locale,
    interfaces (via psutil).
-4. **Adresse IP locale**.
-5. **Géolocaliser une IP publique** — via ip-api.com.
-6. **Détails d'un paquet capturé** — après une capture dans la même
+5. **Adresse IP locale**.
+6. **Géolocaliser une IP publique** — via ip-api.com.
+7. **Détails d'un paquet capturé** — après une capture dans la même
    session, affiche les détails complets d'un paquet par son index.
-7. **Paramètres** — activer/désactiver les logs verbeux.
-8. **Quitter**.
+8. **Paramètres** — activer/désactiver les logs verbeux.
+9. **Quitter**.
 
 Les rapports (txt / json / csv) sont proposés à l'export après chaque
 opération et enregistrés dans `extract/`.
 
 ## Roadmap
 
-- **Phase 1** — scan de ports TCP + fingerprinting OS/services (via
-  wrapper `nmap`).
-- **Phase 2** — corrélation CVE avec les versions détectées.
+- **Phase 2** — corrélation CVE : croiser les versions détectées en
+  Phase 1 avec une base CVE (NVD ou dataset local).
 - **Phase suivante** — mode CLI à arguments (`syffer scan --range
   ...`) en complément du menu.
 
