@@ -112,3 +112,87 @@ class TestValidateBpf:
     def test_rejects_too_long(self):
         with pytest.raises(ValueError):
             validate_bpf("a" * 201)
+
+
+from syffer.utils.validation import (
+    validate_hostname,
+    validate_ports,
+    validate_target,
+)
+
+
+class TestValidateHostname:
+    def test_accepts_simple(self):
+        assert validate_hostname("example.com") == "example.com"
+
+    def test_accepts_subdomain(self):
+        assert validate_hostname("api.example.co.uk") == "api.example.co.uk"
+
+    def test_rejects_empty(self):
+        with pytest.raises(ValueError):
+            validate_hostname("")
+
+    def test_rejects_double_dot(self):
+        with pytest.raises(ValueError):
+            validate_hostname("foo..com")
+
+    def test_rejects_starts_with_dot(self):
+        with pytest.raises(ValueError):
+            validate_hostname(".foo.com")
+
+    def test_rejects_shell_chars(self):
+        with pytest.raises(ValueError):
+            validate_hostname("foo;rm -rf /")
+
+    def test_rejects_too_long(self):
+        with pytest.raises(ValueError):
+            validate_hostname("a" * 254)
+
+
+class TestValidateTarget:
+    def test_accepts_ipv4(self):
+        assert validate_target("8.8.8.8") == "8.8.8.8"
+
+    def test_accepts_cidr(self):
+        assert validate_target("192.168.1.0/24") == "192.168.1.0/24"
+
+    def test_accepts_hostname(self):
+        assert validate_target("scanme.nmap.org") == "scanme.nmap.org"
+
+    def test_rejects_garbage(self):
+        with pytest.raises(ValueError):
+            validate_target("not a target!!!")
+
+
+class TestValidatePorts:
+    def test_accepts_single(self):
+        assert validate_ports("80") == "80"
+
+    def test_accepts_list(self):
+        assert validate_ports("22,80,443") == "22,80,443"
+
+    def test_accepts_range(self):
+        assert validate_ports("1-1024") == "1-1024"
+
+    def test_accepts_mixed(self):
+        assert validate_ports("22,80,1000-2000") == "22,80,1000-2000"
+
+    def test_rejects_zero(self):
+        with pytest.raises(ValueError):
+            validate_ports("0")
+
+    def test_rejects_too_large(self):
+        with pytest.raises(ValueError):
+            validate_ports("65536")
+
+    def test_rejects_reversed_range(self):
+        with pytest.raises(ValueError):
+            validate_ports("100-50")
+
+    def test_rejects_shell_chars(self):
+        with pytest.raises(ValueError):
+            validate_ports("80;rm")
+
+    def test_rejects_empty(self):
+        with pytest.raises(ValueError):
+            validate_ports("")

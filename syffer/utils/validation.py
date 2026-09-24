@@ -60,3 +60,56 @@ def validate_bpf(expr: str) -> str:
         if forbidden in expr:
             raise ValueError(f"filtre BPF contient un caractere interdit : {forbidden!r}")
     return expr
+
+
+_HOSTNAME_RE = re.compile(r"^[A-Za-z0-9]([A-Za-z0-9-.]*[A-Za-z0-9])?$")
+_MAX_HOSTNAME_LEN = 253
+_PORTS_RE = re.compile(r"^[0-9,\-]+$")
+
+
+def validate_hostname(name: str) -> str:
+    if not name:
+        raise ValueError("hostname vide")
+    if len(name) > _MAX_HOSTNAME_LEN:
+        raise ValueError(f"hostname trop long (max {_MAX_HOSTNAME_LEN})")
+    if ".." in name:
+        raise ValueError("hostname contient '..'")
+    if not _HOSTNAME_RE.match(name):
+        raise ValueError(f"hostname invalide : {name}")
+    return name
+
+
+def validate_target(target: str) -> str:
+    """Cible d'un scan : IP, CIDR ou hostname."""
+    for candidate in (validate_ip, validate_cidr, validate_hostname):
+        try:
+            return candidate(target)
+        except ValueError:
+            continue
+    raise ValueError(f"cible invalide : {target}")
+
+
+def validate_ports(spec: str) -> str:
+    if not spec:
+        raise ValueError("spec de ports vide")
+    if not _PORTS_RE.match(spec):
+        raise ValueError(f"spec de ports invalide : {spec}")
+    for chunk in spec.split(","):
+        if "-" in chunk:
+            parts = chunk.split("-")
+            if len(parts) != 2:
+                raise ValueError(f"plage invalide : {chunk}")
+            try:
+                lo, hi = int(parts[0]), int(parts[1])
+            except ValueError as exc:
+                raise ValueError(f"plage non numerique : {chunk}") from exc
+            if not (1 <= lo <= hi <= 65535):
+                raise ValueError(f"plage hors bornes : {chunk}")
+        else:
+            try:
+                n = int(chunk)
+            except ValueError as exc:
+                raise ValueError(f"port non numerique : {chunk}") from exc
+            if not (1 <= n <= 65535):
+                raise ValueError(f"port hors bornes : {n}")
+    return spec
