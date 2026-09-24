@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE nmaprun>
+<nmaprun scanner="nmap" args="nmap -A scanme.nmap.org" start="1700000000" startstr="Sat Nov 14 22:53:20 2023" version="7.94" xmloutputversion="1.05">
+  <verbose level="0"/>
+  <debugging level="0"/>
+  <host starttime="1700000000" endtime="1700000060">
+    <status state="up" reason="echo-reply" reason_ttl="53"/>
+    <address addr="45.33.32.156" addrtype="ipv4"/>
+    <hostnames>
+      <hostname name="scanme.nmap.org" type="user"/>
+    </hostnames>
+    <ports>
+      <port protocol="tcp" portid="22">
+        <state state="open" reason="syn-ack" reason_ttl="53"/>
+        <service name="ssh" product="OpenSSH" version="6.6.1p1 Ubuntu 2ubuntu2.13" method="probed" conf="10"/>
+      </port>
+      <port protocol="tcp" portid="80">
+        <state state="open" reason="syn-ack" reason_ttl="53"/>
+        <service name="http" product="Apache httpd" version="2.4.7" method="probed" conf="10"/>
+        <script id="http-title" output="Go ahead and ScanMe!"/>
+      </port>
+      <port protocol="tcp" portid="9929">
+        <state state="open" reason="syn-ack" reason_ttl="53"/>
+        <service name="nping-echo" product="Nping echo" method="probed" conf="10"/>
+      </port>
+    </ports>
+    <os>
+      <osmatch name="Linux 3.11 - 4.1" accuracy="95" line="12345">
+        <osclass type="general purpose" vendor="Linux" osfamily="Linux" osgen="3.X" accuracy="95"/>
+      </osmatch>
+      <osmatch name="Linux 3.10 - 4.11" accuracy="93" line="12346"/>
+    </os>
+    <hostscript>
+      <script id="http-server-header" output="Apache/2.4.7 (Ubuntu)"/>
+    </hostscript>
+  </host>
+  <runstats>
+    <finished time="1700000060" timestr="Sat Nov 14 22:54:20 2023" elapsed="60.42" summary="Nmap done" exit="success"/>
+  </runstats>
+</nmaprun>
