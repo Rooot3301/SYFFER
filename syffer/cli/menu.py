@@ -14,6 +14,7 @@ logger = logging.getLogger(__name__)
 _CHOICES = [
     ("Capture de paquets", handlers.handle_capture),
     ("Scan du reseau (ARP)", handlers.handle_scan),
+    ("Scan avance (nmap)", handlers.handle_nmap_scan),
     ("Informations reseau de la machine", handlers.handle_info),
     ("Adresse IP locale", handlers.handle_local_ip),
     ("Geolocaliser une IP publique", handlers.handle_geo),

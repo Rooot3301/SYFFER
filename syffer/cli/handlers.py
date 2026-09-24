@@ -110,3 +110,8 @@ def handle_settings(session: Session) -> None:
     session.verbose = bool(new_verbose)
     logging_setup.configure(verbose=session.verbose)
     display.success(f"mode verbeux : {'ON' if session.verbose else 'OFF'}")
+
+
+def handle_nmap_scan(session: Session) -> None:
+    from syffer.cli import submenu_nmap
+    submenu_nmap.run(session)
