@@ -87,3 +87,47 @@ def ask_export() -> tuple[str, str] | None:
     if name is None:
         raise KeyboardInterrupt
     return fmt, safe_filename(name)
+
+
+from syffer.utils.validation import validate_ports, validate_target  # noqa: E402
+
+
+def ask_target() -> str:
+    answer = questionary.text(
+        "Cible (IP, CIDR ou hostname, ex: scanme.nmap.org)",
+        validate=_validate_or_error(validate_target),
+    ).ask()
+    if answer is None:
+        raise KeyboardInterrupt
+    return validate_target(answer)
+
+
+def ask_ports() -> str:
+    answer = questionary.text(
+        "Ports a scanner (ex: 22,80,1000-2000)",
+        default="1-1024",
+        validate=_validate_or_error(validate_ports),
+    ).ask()
+    if answer is None:
+        raise KeyboardInterrupt
+    return validate_ports(answer)
+
+
+def ask_custom_toggles() -> tuple[bool, bool, bool, bool]:
+    choices = questionary.checkbox(
+        "Options nmap a activer",
+        choices=[
+            questionary.Choice("Service + version (-sV)", checked=True),
+            questionary.Choice("Scripts NSE par defaut (-sC)"),
+            questionary.Choice("OS detection (-O, requiert admin)"),
+            questionary.Choice("Skip host discovery (-Pn)"),
+        ],
+    ).ask()
+    if choices is None:
+        raise KeyboardInterrupt
+    return (
+        "Service + version (-sV)" in choices,
+        "Scripts NSE par defaut (-sC)" in choices,
+        "OS detection (-O, requiert admin)" in choices,
+        "Skip host discovery (-Pn)" in choices,
+    )

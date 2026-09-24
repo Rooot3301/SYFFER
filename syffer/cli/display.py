@@ -94,3 +94,46 @@ def render_packet_details(packet: Any) -> None:
         _console.print(Panel(details, title="Details paquet", border_style="cyan"))
     except Exception as exc:
         error(f"impossible d'afficher le paquet : {exc}")
+
+
+def render_nmap_scan(scan: Any) -> None:
+    from syffer.core.models import NmapScan
+    assert isinstance(scan, NmapScan)
+
+    header_lines = [
+        f"Cible : [bold cyan]{scan.target}[/bold cyan]",
+        f"Profil : {scan.profile}",
+        f"Version nmap : {scan.nmap_version or '?'}",
+        f"Duree : {scan.duration_s:.2f}s",
+        f"XML : [dim]{scan.xml_path or '-'}[/dim]",
+    ]
+    _console.print(Panel("\n".join(header_lines), title="Scan nmap", border_style="cyan"))
+
+    for host in scan.hosts:
+        hn = f" ({host.hostname})" if host.hostname else ""
+        state_color = "green" if host.state == "up" else "red"
+        title = f"[{state_color}]{host.ip}[/{state_color}]{hn}"
+        if host.os_guess:
+            acc = f" [{host.os_accuracy}%]" if host.os_accuracy is not None else ""
+            title += f" - OS: {host.os_guess}{acc}"
+
+        table = Table(title=title)
+        table.add_column("Port", justify="right", style="cyan")
+        table.add_column("Proto")
+        table.add_column("Etat")
+        table.add_column("Service")
+        table.add_column("Version")
+        table.add_column("Banner")
+        for p in host.ports:
+            state_style = "green" if p.state == "open" else "dim"
+            version = " ".join(filter(None, [p.product, p.version]))
+            banner_display = (p.banner or "")[:40]
+            table.add_row(
+                str(p.port), p.proto,
+                f"[{state_style}]{p.state}[/{state_style}]",
+                p.service or "-", version or "-", banner_display or "-",
+            )
+        _console.print(table)
+
+        for s in host.scripts:
+            _console.print(Panel(s.output, title=f"script: {s.id}", border_style="magenta"))
