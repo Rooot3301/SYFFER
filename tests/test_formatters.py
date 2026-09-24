@@ -112,3 +112,57 @@ class TestToCsv:
         lines = csv_text.strip().splitlines()
         assert lines[0] == "ip,country,city,region,lat,lon,isp,status"
         assert len(lines) == 2
+
+
+from syffer.core.models import NmapHost, NmapPort, NmapScan, NmapScript
+
+
+def _sample_nmap() -> NmapScan:
+    return NmapScan(
+        target="scanme.nmap.org",
+        profile="Aggressive",
+        started_at=0.0,
+        duration_s=12.5,
+        nmap_version="7.94",
+        xml_path=None,
+        hosts=(
+            NmapHost(
+                ip="45.33.32.156",
+                hostname="scanme.nmap.org",
+                state="up",
+                os_guess="Linux 3.11 - 4.1",
+                os_accuracy=95,
+                ports=(
+                    NmapPort(port=22, proto="tcp", state="open", service="ssh",
+                             product="OpenSSH", version="6.6.1", banner="SSH-2.0"),
+                    NmapPort(port=80, proto="tcp", state="open", service="http",
+                             product="Apache", version="2.4.7", banner=None),
+                ),
+                scripts=(NmapScript(id="http-server-header", output="Apache/2.4.7"),),
+            ),
+        ),
+    )
+
+
+class TestNmapScanFormatters:
+    def test_txt_contains_target_and_ports(self):
+        text = to_txt(_sample_nmap())
+        assert "scanme.nmap.org" in text
+        assert "45.33.32.156" in text
+        assert "22" in text
+        assert "ssh" in text
+        assert "OpenSSH" in text
+        assert "Linux" in text
+
+    def test_json_roundtrip(self):
+        payload = json.loads(to_json(_sample_nmap()))
+        assert payload["target"] == "scanme.nmap.org"
+        assert payload["hosts"][0]["ports"][0]["service"] == "ssh"
+
+    def test_csv_flattens_ports(self):
+        csv_text = to_csv(_sample_nmap())
+        lines = csv_text.strip().splitlines()
+        assert lines[0].startswith("host_ip,hostname,os_guess,os_accuracy,port")
+        assert len(lines) == 3
+        assert "45.33.32.156" in csv_text
+        assert "OpenSSH" in csv_text

@@ -12,10 +12,11 @@ from syffer.core.models import (
     CaptureResult,
     GeoInfo,
     NetworkInfo,
+    NmapScan,
     ScanResult,
 )
 
-Result = Union[CaptureResult, ScanResult, NetworkInfo, GeoInfo]
+Result = Union[CaptureResult, ScanResult, NetworkInfo, GeoInfo, NmapScan]
 
 
 def to_json(result: Result) -> str:
@@ -72,6 +73,30 @@ def to_txt(result: Result) -> str:
         ]
         return "\n".join(lines) + "\n"
 
+    if isinstance(result, NmapScan):
+        lines = [
+            f"Scan nmap : {result.target}",
+            f"Profil : {result.profile}",
+            f"Version nmap : {result.nmap_version or '?'}",
+            f"Duree : {result.duration_s:.2f}s",
+            f"XML : {result.xml_path or '-'}",
+            "-" * 60,
+        ]
+        for host in result.hosts:
+            hn = f" ({host.hostname})" if host.hostname else ""
+            lines.append(f"Host {host.ip}{hn} [{host.state}]")
+            if host.os_guess:
+                acc = f" {host.os_accuracy}%" if host.os_accuracy is not None else ""
+                lines.append(f"  OS : {host.os_guess}{acc}")
+            for p in host.ports:
+                service = p.service or "?"
+                version = f" {p.product or ''} {p.version or ''}".strip()
+                banner = f" | {p.banner}" if p.banner else ""
+                lines.append(f"  {p.port}/{p.proto} {p.state:<8} {service} {version}{banner}")
+            for s in host.scripts:
+                lines.append(f"  [script:{s.id}] {s.output}")
+        return "\n".join(lines) + "\n"
+
     raise TypeError(f"type de resultat non supporte : {type(result).__name__}")
 
 
@@ -100,6 +125,19 @@ def to_csv(result: Result) -> str:
             result.lon if result.lon is not None else "",
             result.isp or "", result.status,
         ])
+    elif isinstance(result, NmapScan):
+        writer.writerow([
+            "host_ip", "hostname", "os_guess", "os_accuracy",
+            "port", "proto", "state", "service", "product", "version", "banner",
+        ])
+        for host in result.hosts:
+            for p in host.ports:
+                writer.writerow([
+                    host.ip, host.hostname or "",
+                    host.os_guess or "", host.os_accuracy if host.os_accuracy is not None else "",
+                    p.port, p.proto, p.state,
+                    p.service or "", p.product or "", p.version or "", p.banner or "",
+                ])
     else:
         raise TypeError(f"type de resultat non supporte : {type(result).__name__}")
 
