@@ -1,56 +1,79 @@
-# Syffer - Outil de Capture de Paquets et de Scan Réseau
+# Syffer
 
+Outil CLI de recon réseau : capture de paquets, scan ARP, informations
+réseau, géolocalisation d'IP. **Recon uniquement** — pas d'exploitation
+active.
 
-  /$$$$$$  /$$     /$$ /$$$$$$$$ /$$$$$$$$ /$$$$$$$$ /$$$$$$$ 
- /$$__  $$|  $$   /$$/| $$_____/| $$_____/| $$_____/| $$__  $$
-| $$  \__/ \  $$ /$$/ | $$      | $$      | $$      | $$  \ $$
-|  $$$$$$   \  $$$$/  | $$$$$   | $$$$$   | $$$$$   | $$$$$$$/
- \____  $$   \  $$/   | $$__/   | $$__/   | $$__/   | $$__  $$
- /$$  \ $$    | $$    | $$      | $$      | $$      | $$  \ $$
-|  $$$$$$/    | $$    | $$      | $$      | $$$$$$$$| $$  | $$
- \______/     |__/    |__/      |__/      |________/|__/  |__/
-                                                              
-                                                              
-                                                              
+```
+   _______     ________ ______ ______ ______
+  / ____/ |   / / ____/ ____/ ____/ ____/ __ \
+ (__  \| | / / /_  /_  /_   /_   / /_/ /
+_____/ | |/ / __/ __/ __/ __/ _, _/
+     /  |___/_/   /_/   /_/   /_/ |_|
+```
 
-                                                          
+## Prérequis
 
-## Description
-Syffer est un outil simple en ligne de commande qui permet de capturer des paquets réseau et de scanner les appareils connectés au réseau local. Il offre également des fonctionnalités pour obtenir des informations sur le réseau de votre machine, l'adresse IP locale, la localisation d'une adresse IP publique et afficher les détails des paquets capturés.
+- Python ≥ 3.10 (testé 3.10 / 3.11 / 3.12).
+- **Windows** : [Npcap](https://npcap.com/) installé pour la capture
+  de paquets et le scan ARP.
+- **Linux / macOS** : la capture et le scan ARP nécessitent
+  `CAP_NET_RAW` ou d'être lancés en root.
 
 ## Installation
-1. Assurez-vous d'avoir Python 3.x installé sur votre système.
-2. Clonez ce référentiel GitHub vers votre machine locale.
-3. Installez les dépendances requises en exécutant la commande suivante : pip install -r requirements.txt
+
+Depuis le dossier du projet :
+
+```bash
+pip install -e .
+```
+
+Ou en environnement isolé via [pipx](https://pypa.github.io/pipx/) :
+
+```bash
+pipx install .
+```
 
 ## Utilisation
-1. Exécutez le script `Syffer.py` pour lancer le programme.
-2. Le menu principal s'affiche, suivez les instructions pour sélectionner l'option souhaitée.
-3. Suivez les instructions spécifiques à chaque option pour capturer des paquets, scanner le réseau, obtenir des informations réseau, etc.
-4. Les rapports de capture de paquets et de scan réseau seront enregistrés dans le répertoire "extract" du projet.
 
-## Options du Menu
-1. **Capture de Paquets :** Capture et affiche les 10 derniers paquets réseau. Enregistre également les paquets capturés dans un fichier PCAP et génère un rapport TXT avec les détails de la capture.
+```bash
+syffer
+```
 
-2. **Scan du Réseau :** Scanne le réseau local pour détecter les appareils connectés. Affiche les adresses IP et les adresses MAC des appareils détectés. Enregistre également les résultats du scan dans un rapport TXT.
+Le menu interactif s'affiche. Utilisez les flèches pour naviguer,
+Entrée pour valider. Menu :
 
-3. **Obtenir les Informations Réseau de la Machine :** Affiche les informations réseau de votre machine, telles que les adresses IP, les adresses MAC, les interfaces réseau, etc.
+1. **Capture de paquets** — sniffe N paquets, filtre BPF optionnel,
+   écrit un `.pcap` horodaté dans `extract/`.
+2. **Scan du réseau (ARP)** — scan ARP d'un CIDR, affiche IP / MAC /
+   vendor.
+3. **Informations réseau de la machine** — hostname, IP locale,
+   interfaces (via psutil).
+4. **Adresse IP locale**.
+5. **Géolocaliser une IP publique** — via ip-api.com.
+6. **Détails d'un paquet capturé** — après une capture dans la même
+   session, affiche les détails complets d'un paquet par son index.
+7. **Paramètres** — activer/désactiver les logs verbeux.
+8. **Quitter**.
 
-4. **Obtenir l'Adresse IP Locale de la Machine :** Affiche l'adresse IP locale de votre machine.
+Les rapports (txt / json / csv) sont proposés à l'export après chaque
+opération et enregistrés dans `extract/`.
 
-5. **Obtenir la Localisation d'une Adresse IP Publique :** Obtient la localisation (pays, ville, région, latitude, longitude) d'une adresse IP publique en utilisant l'API IP-API.
+## Roadmap
 
-6. **Afficher les Détails d'un Paquet :** Affiche les détails d'un paquet capturé spécifique en fonction de l'index.
+- **Phase 1** — scan de ports TCP + fingerprinting OS/services (via
+  wrapper `nmap`).
+- **Phase 2** — corrélation CVE avec les versions détectées.
+- **Phase suivante** — mode CLI à arguments (`syffer scan --range
+  ...`) en complément du menu.
 
-7. **Quitter :** Quitte le programme.
+## Usage éthique
 
-## Remarques
-- Certaines options, telles que la capture de paquets, peuvent nécessiter des permissions root/administrateur pour accéder à certaines fonctionnalités réseau.
+Syffer est un outil de recon à utiliser uniquement sur des réseaux
+dont vous êtes propriétaire ou pour lesquels vous avez une
+autorisation écrite. Toute utilisation malveillante est de votre
+responsabilité.
 
 ## Auteur
-Ce projet a été créé par ROOT3301.
 
-## Licence
-Ce projet est sous licence MIT.
-
-
+Créé par ROOT3301. Sous licence MIT.
