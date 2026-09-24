@@ -60,3 +60,31 @@ def test_network_info_composition():
 def test_packet_summary_fields():
     p = PacketSummary(index=0, timestamp=1234.5, summary="TCP ...", src="1.1.1.1", dst="2.2.2.2", protocol="TCP", length=64)
     assert p.protocol == "TCP"
+
+
+from syffer.core.models import NmapHost, NmapPort, NmapScan, NmapScript
+
+
+def test_nmap_port_is_frozen():
+    p = NmapPort(port=80, proto="tcp", state="open", service="http",
+                 product=None, version=None, banner=None)
+    with pytest.raises(Exception):
+        p.port = 443  # type: ignore[misc]
+
+
+def test_nmap_host_carries_scripts():
+    scripts = (NmapScript(id="http-title", output="Welcome"),)
+    ports = (NmapPort(port=80, proto="tcp", state="open", service="http",
+                     product=None, version=None, banner=None),)
+    host = NmapHost(ip="1.2.3.4", hostname=None, state="up",
+                    os_guess=None, os_accuracy=None, ports=ports, scripts=scripts)
+    assert host.scripts[0].id == "http-title"
+    assert host.ports[0].port == 80
+
+
+def test_nmap_scan_composition():
+    scan = NmapScan(target="1.2.3.4", profile="quick", started_at=0.0,
+                    duration_s=1.0, hosts=(), nmap_version="7.94",
+                    xml_path=None)
+    assert scan.hosts == ()
+    assert scan.nmap_version == "7.94"

@@ -75,3 +75,42 @@ class GeoInfo:
     lon: float | None
     isp: str | None
     status: str
+
+
+@dataclass(frozen=True, slots=True)
+class NmapScript:
+    id: str
+    output: str
+
+
+@dataclass(frozen=True, slots=True)
+class NmapPort:
+    port: int
+    proto: str
+    state: str
+    service: str | None
+    product: str | None
+    version: str | None
+    banner: str | None
+
+
+@dataclass(frozen=True, slots=True)
+class NmapHost:
+    ip: str
+    hostname: str | None
+    state: str
+    os_guess: str | None
+    os_accuracy: int | None
+    ports: tuple[NmapPort, ...]
+    scripts: tuple[NmapScript, ...]
+
+
+@dataclass(frozen=True, slots=True)
+class NmapScan:
+    target: str
+    profile: str
+    started_at: float
+    duration_s: float
+    hosts: tuple[NmapHost, ...]
+    nmap_version: str | None
+    xml_path: Path | None
